@@ -88,12 +88,6 @@ const handleZoom = () => {
 map.on('locationerror', handleLocationError)
 map.on('locationfound', handleLocationFound)
 map.on('zoom', handleZoom)
-map.on('click', (e) => {
-    // post pin data to server
-    axios.post('/api/pin', e.latlng)
-        .then(res => console.log(res))
-        .catch(err => console.log(err))
-})
 
 const countPins = () => {
     // get pins count from server and update state variables
@@ -143,7 +137,6 @@ const postPin = () => {
     // post pin data to server
     axios.post('/api/pin', latlng)
         .then(res => {
-            console.log(res)
             // destructure response
             const created = res.data[1]
 
