@@ -41,15 +41,23 @@ let marker = {}
 // leaflet event handlers
 const handleLocationError = (e) => alert(e.message)
 const handleLocationFound = (e) => {
-    // remove disabled attribute from button node
-    button.removeAttribute('disabled')
-
-    // destructure event and update state
-    bounds = e.bounds
-    latlng = e.latlng
-
     // get pins
     getPins()
+
+    // count pins
+    countPins()
+
+    // update button node
+    button.classList.remove('hide')
+
+    // destructure event and update state variables
+    bounds = e.bounds
+    latlng = {
+        // lat: e.latlng.lat.toPrecision(6),
+        // lng: e.latlng.lng.toPrecision(6)
+        lat: e.latlng.lat,
+        lng: e.latlng.lng
+    }
 
     // restrict map view to the given bounds
     map.setMaxBounds(bounds)
@@ -63,7 +71,7 @@ const handleLocationFound = (e) => {
         })
 }
 const handleZoom = () => {
-    // recalculate map bounds and update state
+    // recalculate map bounds and update state variables
     bounds = map.getBounds()
 
     // clear existing pins
@@ -71,20 +79,34 @@ const handleZoom = () => {
 
     // get pins
     getPins()
-}
 
-// dom event handlers
-const handleClick = () => postPin()
+    // count pins
+    countPins()
+}
 
 // attach leaflet event handlers
 map.on('locationerror', handleLocationError)
 map.on('locationfound', handleLocationFound)
 map.on('zoom', handleZoom)
+map.on('click', (e) => {
+    // post pin data to server
+    axios.post('/api/pin', e.latlng)
+        .then(res => console.log(res))
+        .catch(err => console.log(err))
+})
 
 const countPins = () => {
-    // get pins count from server and update state
+    // get pins count from server and update state variables
     axios.get('/api/pins/count' + queryString())
-        .then(res => count.textContent = res.data)
+        .then(res => {
+            // destructure response
+            const { data: pinCount } = res
+
+            // update count node
+            pinCount
+                ? count.textContent = pinCount
+                : count.textContent = ''
+        })
         .catch(err => console.log(err))
 }
 
@@ -93,18 +115,13 @@ const getPins = () => {
     axios.get('/api/pins' + queryString())
         .then(res => {
             // destructure response
-            const {
-                count: pinCount,
-                rows: pins
-            } = res.data
+            const { data: pins } = res
 
-            // set count node text content
-            pinCount
-                ? count.textContent = pinCount
-                : count.textContent = ''
+            // filter pins
+            const filteredPins = pins.filter(pin => pin.lat != latlng.lat && pin.lng != latlng.lng)
 
             // define and add markers to map
-            pins.forEach(pin => {
+            filteredPins.forEach(pin => {
                 // destructure pin
                 const {
                     lat,
@@ -126,40 +143,29 @@ const postPin = () => {
     // post pin data to server
     axios.post('/api/pin', latlng)
         .then(res => {
+            console.log(res)
             // destructure response
-            const {
-                lat,
-                lng
-            } = res.data
+            const created = res.data[1]
 
-            // update pin count
-            countPins()
+            // update count node
+            created
+                ? count.textContent = parseInt(count.textContent || 0) + 1
+                : count.textContent = count.textContent
 
             // open marker popup
             marker.openPopup()
-
-            // update icon inner html
-            icon.innerHTML = 'check'
 
             // update button node
             button.setAttribute('disabled', true)
             button.classList.add('fade-out')
 
+            // update icon node
+            icon.innerHTML = 'check'
+
             // wait 3.5 seconds
             setTimeout(() => {
                 // remove button node from dom
                 button.remove()
-
-                // clear post pin layer
-                postPinLayer.clearLayers()
-
-                // define and add marker to get pins layer
-                marker = L.marker({ lat, lng }, { icon: yoyoPink })
-                    .addTo(getPinsLayer)
-                    .bindPopup('<span class="yo">Yo!<span>', {
-                        closeButton: false,
-                        maxWidth: 'auto'
-                    })
             }, 3500)
         })
         .catch(err => console.log(err))
@@ -186,24 +192,21 @@ const queryString = () => {
 
     // concatenate and return query string
     return (
-        '?northEastLat=' + northEastLat.toFixed(5)
-        + '&northEastLng=' + northEastLng.toFixed(5)
-        + '&southWestLat=' + southWestLat.toFixed(5)
-        + '&southWestLng=' + southWestLng.toFixed(5)
+        '?northEastLat=' + northEastLat
+        + '&northEastLng=' + northEastLng
+        + '&southWestLat=' + southWestLat
+        + '&southWestLng=' + southWestLng
     )
 }
 
 const init = () => {
-    // select nodes and update state
+    // select nodes and update state variables
     button = document.querySelector('#button')
     count = document.querySelector('#count')
     icon = document.querySelector('i')
 
-    // add disabled attribute to button node
-    button.setAttribute('disabled', true)
-
     // add click event listener to button node
-    button.addEventListener('click', handleClick)
+    button.addEventListener('click', () => postPin())
 
     // detect user location
     map.locate({ setView: true, maxZoom: 15 })

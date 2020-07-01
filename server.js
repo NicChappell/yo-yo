@@ -19,7 +19,7 @@ app.use(express.json());
 app.use(express.static('public'));
 
 // configure view engine
-app.engine('handlebars', exphbs({ defaultLayout: 'main' }));
+app.engine('handlebars', exphbs());
 app.set('view engine', 'handlebars');
 
 // import models

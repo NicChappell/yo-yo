@@ -13,7 +13,7 @@ module.exports = function (app) {
         southWestLat = req.query.southWestLat;
         southWestLng = req.query.southWestLng;
 
-        db.Pin.findAndCountAll({
+        db.Pin.findAll({
             where: {
                 createdAt: {
                     [Op.between]: [new Date(new Date() - 0.25 * 60 * 60 * 1000), new Date()]
@@ -63,7 +63,12 @@ module.exports = function (app) {
     // @route:  POST /api/pin
     // @desc:   Create a new Pin record
     app.post('/api/pin', function (req, res) {
-        db.Pin.create(req.body).then(function (result) {
+        db.Pin.findOrCreate({
+            where: {
+                lat: req.body.lat,
+                lng: req.body.lng
+            }
+        }).then(function (result) {
             res.json(result);
         }).catch(function (err) {
             console.log(err);
