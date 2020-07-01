@@ -4,9 +4,27 @@ const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
 const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/../config/config')[env];
 const db = {};
+
+require('dotenv').config();
+const connection = {
+  development: {
+    username: 'root',
+    password: 'password',
+    database: 'yoyo',
+    host: '127.0.0.1',
+    dialect: 'mysql'
+  },
+  production: {
+    username: process.env.JAWSDB_USERNAME,
+    password: process.env.JAWSDB_PASSWORD,
+    database: process.env.JAWSDB_DATABASE,
+    host: process.env.JAWSDB_HOST,
+    dialect: 'mysql'
+  }
+};
+const env = process.env.NODE_ENV || 'development';
+const config = connection[env];
 
 const sequelize = new Sequelize(config.database, config.username, config.password, config);
 
