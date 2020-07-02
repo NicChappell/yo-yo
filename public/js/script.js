@@ -55,8 +55,8 @@ const handleLocationFound = (e) => {
     latlng = {
         // lat: e.latlng.lat.toPrecision(6),
         // lng: e.latlng.lng.toPrecision(6)
-        lat: e.latlng.lat,
-        lng: e.latlng.lng
+        lat: e.latlng.lat.toFixed(6),
+        lng: e.latlng.lng.toFixed(6)
     }
 
     // restrict map view to the given bounds
