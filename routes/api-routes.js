@@ -65,9 +65,6 @@ module.exports = function (app) {
     app.post('/api/pin', function (req, res) {
         db.Pin.findOrCreate({
             where: {
-                createdAt: {
-                    [Op.between]: [new Date(new Date() - 0.25 * 60 * 60 * 1000), new Date()]
-                },
                 lat: req.body.lat,
                 lng: req.body.lng
             }
