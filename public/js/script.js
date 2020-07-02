@@ -53,8 +53,8 @@ const handleLocationFound = (e) => {
     // destructure event and update state variables
     bounds = e.bounds
     latlng = {
-        lat: e.latlng.lat.toFixed(5),
-        lng: e.latlng.lng.toFixed(5)
+        lat: e.latlng.lat.toFixed(4),
+        lng: e.latlng.lng.toFixed(4)
     }
 
     // restrict map view to the given bounds
