@@ -3,6 +3,6 @@ It's the sequel to Yo! It's Yo-yo!
 
 <img alt="Yo!" src="./public/img/yoyo-pink.svg" width="96">
 
-An app for posting anonymous and temporary "Yo!" pins on a Leaflet map. Made using Handlebars and an Express server backed by a MySQL database with a Sequelize ORM and deployed on Heroku: [Yo!](https://apologetic-drake-58425.herokuapp.com/)
+It's the sequel to Yo! It's Yo-yo! A Handlebars application backed by Express and MySQL that uses the Geolocation API to drop a temporary pin on a Leaflet map
 
-The app uses the Geolocation API to locate a user. When the location has been found a user will see any "Yo!" pins submitted by other users within the previous 15 minutes inside the bounds of their map view. The user will also have the ability to submit their own "Yo!" pin, and their pin will be available to other users for 15 minutes.
+Deployed with Heroku: [apologetic-drake-58425.herokuapp.com/](https://apologetic-drake-58425.herokuapp.com/)
